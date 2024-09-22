@@ -37,6 +37,7 @@ import {
   Legend,
 } from "recharts";
 import { Zap, Battery, Sun, DollarSign } from "lucide-react";
+import useGetStatisticsClient from "../hooks/useGetStaticticClient";
 
 const COLORS = {
   consumption: "#ff4757",
@@ -51,54 +52,17 @@ export function EnergyDashboard() {
   const [clientStatistics, setClientStatistics] = useState(null);
   const [systemLoad, setSystemLoad] = useState(null);
   const [invoice, setInvoice] = useState(null);
-
+  const { getStaticsClient } = useGetStatisticsClient();
   const getClientStatistics = async (event) => {
     event.preventDefault();
     const formData = new FormData(event.target);
     const clientId = formData.get("clientId");
-
-    // Simulating API call with mock data
-    setClientStatistics({
-      client_id: clientId,
-      results: [
-        {
-          consumption: {
-            total_consumption: 135,
-            details: Array(24)
-              .fill(null)
-              .map((_, i) => ({
-                id_record: i + 1,
-                id_service: 1,
-                id_consumption: i + 1,
-                record_timestamp: `2024-01-19T${String(i).padStart(
-                  2,
-                  "0"
-                )}:00:00`,
-                value: Math.floor(Math.random() * 20) + 5,
-              })),
-          },
-          injection: {
-            total_injection: 180,
-            details: Array(24)
-              .fill(null)
-              .map((_, i) => ({
-                id_record: i + 1,
-                id_service: 1,
-                id_injection: i + 1,
-                record_timestamp: `2024-01-19T${String(i).padStart(
-                  2,
-                  "0"
-                )}:00:00`,
-                value: Math.floor(Math.random() * 20) + 10,
-              })),
-          },
-        },
-      ],
-    });
+    const stast = await getStaticsClient(clientId);
+    console.log(stast);
+    setClientStatistics(stast);
   };
 
   const getSystemLoad = async () => {
-    // Simulating API call with mock data
     setSystemLoad(
       Array(24)
         .fill(null)
@@ -115,43 +79,14 @@ export function EnergyDashboard() {
     const clientId = formData.get("clientId");
     const month = formData.get("month");
     const concept = formData.get("concept");
-
+    const stast = await getStaticsClient(clientId);
+    console.log(stast);
     // Simulating API call with mock data
-    setInvoice({
-      client_id: clientId,
-      month: month,
-      invoice: [
-        {
-          EA: {
-            concept: "Energía Activa (EA)",
-            sum: 135,
-            CU: 0.7,
-            value: 94.5,
-          },
-          EC: {
-            concept: "Comercialización de Excedentes de Energía (EC)",
-            sum: 180,
-            C: 0.5,
-            value: 90,
-          },
-          EE1: {
-            concept: "Excedentes de Energía tipo 1 (EE1)",
-            sum: 135,
-            "-CU": -0.7,
-            value: -94.5,
-          },
-          EE2: {
-            concept: "Excedentes de Energía tipo 2 (EE2)",
-            sum: 45,
-            value: 0.18610000000000002,
-          },
-        },
-      ],
-    });
+    setInvoice(stast);
   };
 
   return (
-    <div className="min-h-screen bg-black text-white p-8">
+    <div className="min-h-screen bg-black text-white p-8  w-full">
       <h1 className="text-4xl font-bold text-center mb-8 text-green-400">
         Energy Dashboard
       </h1>
