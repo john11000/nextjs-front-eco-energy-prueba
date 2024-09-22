@@ -38,6 +38,7 @@ import {
 } from "recharts";
 import { Zap, Battery, Sun, DollarSign } from "lucide-react";
 import useGetStatisticsClient from "../hooks/useGetStaticticClient";
+import useGetSystemLoad from "../hooks/useGetSystemLoad";
 
 const COLORS = {
   consumption: "#ff4757",
@@ -53,6 +54,7 @@ export function EnergyDashboard() {
   const [systemLoad, setSystemLoad] = useState(null);
   const [invoice, setInvoice] = useState(null);
   const { getStaticsClient } = useGetStatisticsClient();
+  const { getSystemLoad: getSystemLoadApi } = useGetSystemLoad();
   const getClientStatistics = async (event) => {
     event.preventDefault();
     const formData = new FormData(event.target);
@@ -63,14 +65,8 @@ export function EnergyDashboard() {
   };
 
   const getSystemLoad = async () => {
-    setSystemLoad(
-      Array(24)
-        .fill(null)
-        .map((_, i) => ({
-          timestamp: `2024-01-19T${String(i).padStart(2, "0")}:00:00`,
-          load: Math.floor(Math.random() * 100) + 1,
-        }))
-    );
+    const getSystemLoadData = await getSystemLoadApi();
+    setSystemLoad(getSystemLoadData);
   };
 
   const calculateInvoice = async (event) => {
