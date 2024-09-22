@@ -1,5 +1,4 @@
 "use client";
-
 import { useState } from "react";
 import { Button } from "../components/button";
 import {
@@ -39,6 +38,7 @@ import {
 import { Zap, Battery, Sun, DollarSign } from "lucide-react";
 import useGetStatisticsClient from "../hooks/useGetStaticticClient";
 import useGetSystemLoad from "../hooks/useGetSystemLoad";
+import usePostCalculateInovice from "../hooks/usePostCalculateInovice";
 
 const COLORS = {
   consumption: "#ff4757",
@@ -55,6 +55,7 @@ export function EnergyDashboard() {
   const [invoice, setInvoice] = useState(null);
   const { getStaticsClient } = useGetStatisticsClient();
   const { getSystemLoad: getSystemLoadApi } = useGetSystemLoad();
+  const { postCalculateInvoice } = usePostCalculateInovice();
   const getClientStatistics = async (event) => {
     event.preventDefault();
     const formData = new FormData(event.target);
@@ -75,9 +76,7 @@ export function EnergyDashboard() {
     const clientId = formData.get("clientId");
     const month = formData.get("month");
     const concept = formData.get("concept");
-    const stast = await getStaticsClient(clientId);
-    console.log(stast);
-    // Simulating API call with mock data
+    const stast = await postCalculateInvoice(clientId, month, concept);
     setInvoice(stast);
   };
 
@@ -410,15 +409,19 @@ export function EnergyDashboard() {
                         {Object.entries(invoice.invoice[0]).map(
                           ([key, item]) => (
                             <tr key={key} className="border-t border-gray-700">
-                              <td className="py-2">{item.concept}</td>
-                              <td className="py-2">{item.sum}</td>
-                              <td className="py-2">
+                              <td className="py-2 text-white">
+                                {item.concept}
+                              </td>
+                              <td className="py-2 text-white">{item.sum}</td>
+                              <td className="py-2 text-white">
                                 {item.CU ||
                                   item.C ||
                                   item["-CU"]?.toFixed(2) ||
                                   "-"}
                               </td>
-                              <td className="py-2">{item.value.toFixed(2)}</td>
+                              <td className="py-2  text-white">
+                                {item.value.toFixed(2)}
+                              </td>
                             </tr>
                           )
                         )}
@@ -436,7 +439,7 @@ export function EnergyDashboard() {
                         <PieChart>
                           <Pie
                             data={Object.entries(invoice.invoice[0]).map(
-                              ([key, item]) => ({
+                              ([item]) => ({
                                 name: item.concept,
                                 value: Math.abs(item.value),
                               })
