@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Button } from "../components/button";
 import {
   Card,
@@ -13,6 +13,7 @@ import { Input } from "../components/input";
 import { Label } from "../components/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/tabs";
 import { ScrollArea } from "../components/scroll-area";
+import Options from "@/features/common/components/Options";
 import {
   Select,
   SelectContent,
@@ -39,6 +40,7 @@ import { Zap, Battery, Sun, DollarSign } from "lucide-react";
 import useGetStatisticsClient from "../hooks/useGetStaticticClient";
 import useGetSystemLoad from "../hooks/useGetSystemLoad";
 import usePostCalculateInovice from "../hooks/usePostCalculateInovice";
+import { ContextEnergy } from "../context/EnergyContextProvider";
 
 const COLORS = {
   consumption: "#ff4757",
@@ -53,6 +55,7 @@ export function EnergyDashboard() {
   const [clientStatistics, setClientStatistics] = useState(null);
   const [systemLoad, setSystemLoad] = useState(null);
   const [invoice, setInvoice] = useState(null);
+  const { notifyError } = useContext(ContextEnergy);
   const { getStaticsClient } = useGetStatisticsClient();
   const { getSystemLoad: getSystemLoadApi } = useGetSystemLoad();
   const { postCalculateInvoice } = usePostCalculateInovice();
@@ -60,8 +63,13 @@ export function EnergyDashboard() {
     event.preventDefault();
     const formData = new FormData(event.target);
     const clientId = formData.get("clientId");
+
+    if (!clientId) {
+      notifyError("El id del cliente no puede estar vacio");
+      return;
+    }
+
     const stast = await getStaticsClient(clientId);
-    console.log(stast);
     setClientStatistics(stast);
   };
 
@@ -76,6 +84,15 @@ export function EnergyDashboard() {
     const clientId = formData.get("clientId");
     const month = formData.get("month");
     const concept = formData.get("concept");
+    if (!clientId) {
+      notifyError("El id del cliente no puede estar vacio");
+      return;
+    }
+    if (!month) {
+      notifyError("El id del cliente no puede estar vacio");
+      return;
+    }
+
     const stast = await postCalculateInvoice(clientId, month, concept);
     setInvoice(stast);
   };
@@ -85,6 +102,7 @@ export function EnergyDashboard() {
       <h1 className="text-4xl font-bold text-center mb-8 text-green-400">
         Energy Dashboard
       </h1>
+      <Options />
       <Tabs defaultValue="client-stats" className="w-full max-w-6xl mx-auto">
         <TabsList className="grid w-full grid-cols-3 bg-gray-900">
           <TabsTrigger value="client-stats" className="text-white">
