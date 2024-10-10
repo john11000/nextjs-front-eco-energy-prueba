@@ -1,3 +1,11 @@
+"use client";
+
+import { EnergyContextProvider } from "@/features/energy/context/EnergyContextProvider";
+import CustomersContainer from "@/features/customers/containers/CustomersContainer";
 export default function CustomersPage() {
-  return <div>customers</div>;
+  return (
+    <EnergyContextProvider>
+      <CustomersContainer />
+    </EnergyContextProvider>
+  );
 }

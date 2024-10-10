@@ -1,5 +1,5 @@
 "use client";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Button } from "../components/button";
 import {
   Card,
@@ -13,7 +13,6 @@ import { Input } from "../components/input";
 import { Label } from "../components/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/tabs";
 import { ScrollArea } from "../components/scroll-area";
-import Options from "@/features/common/components/Options";
 import {
   Select,
   SelectContent,
@@ -51,7 +50,7 @@ const COLORS = {
   ee2: "#ff6b6b",
 };
 
-export function EnergyDashboard() {
+export function EnergyDashboard({ clientId: clientIdParam }) {
   const [clientStatistics, setClientStatistics] = useState(null);
   const [systemLoad, setSystemLoad] = useState(null);
   const [invoice, setInvoice] = useState(null);
@@ -59,6 +58,16 @@ export function EnergyDashboard() {
   const { getStaticsClient } = useGetStatisticsClient();
   const { getSystemLoad: getSystemLoadApi } = useGetSystemLoad();
   const { postCalculateInvoice } = usePostCalculateInovice();
+
+  useEffect(() => {
+    (async () => {
+      if (clientIdParam) {
+        const stast = await getStaticsClient(clientIdParam);
+        setClientStatistics(stast);
+      }
+    })();
+  }, []);
+
   const getClientStatistics = async (event) => {
     event.preventDefault();
     const formData = new FormData(event.target);
@@ -102,7 +111,6 @@ export function EnergyDashboard() {
       <h1 className="text-4xl font-bold text-center mb-8 text-green-400">
         Energy Dashboard
       </h1>
-      <Options />
       <Tabs defaultValue="client-stats" className="w-full max-w-6xl mx-auto">
         <TabsList className="grid w-full grid-cols-3 bg-gray-900">
           <TabsTrigger value="client-stats" className="text-white">
@@ -139,6 +147,7 @@ export function EnergyDashboard() {
                     id="clientId"
                     name="clientId"
                     placeholder="Enter client ID"
+                    defaultValue={clientIdParam}
                     className="bg-gray-800 text-white border-gray-700"
                   />
                 </div>
