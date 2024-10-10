@@ -34,6 +34,7 @@ import {
   Pie,
   Cell,
   Legend,
+  Brush,
 } from "recharts";
 import { Zap, Battery, Sun, DollarSign } from "lucide-react";
 import useGetStatisticsClient from "../hooks/useGetStaticticClient";
@@ -111,7 +112,7 @@ export function EnergyDashboard({ clientId: clientIdParam }) {
       <h1 className="text-4xl font-bold text-center mb-8 text-green-400">
         Energy Dashboard
       </h1>
-      <Tabs defaultValue="client-stats" className="w-full max-w-6xl mx-auto">
+      <Tabs defaultValue="client-stats" className="w-full mx-auto">
         <TabsList className="grid w-full grid-cols-3 bg-gray-900">
           <TabsTrigger value="client-stats" className="text-white">
             <Zap className="mr-2" />
@@ -205,6 +206,11 @@ export function EnergyDashboard({ clientId: clientIdParam }) {
                               dataKey="value"
                               stroke={COLORS.consumption}
                               strokeWidth={2}
+                            />
+                            <Brush
+                              dataKey="record_timestamp"
+                              height={30}
+                              stroke="#888"
                             />
                           </LineChart>
                         </ResponsiveContainer>
